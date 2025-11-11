@@ -1,67 +1,172 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
-    <title>LinkedOut</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>LinkedOut - AI Post Summarizer</title>
     <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+    <script src="https://unpkg.com/heroicons@1.0.6/dist/solid.js"></script>
+    <style>
+        /* Simple style to make the Heroicons size correctly */
+        .hi-icon {
+            width: 1.25rem;
+            height: 1.25rem;
+        }
+        .hi-icon-lg {
+            width: 2rem;
+            height: 2rem;
+        }
+    </style>
 </head>
-<body class="bg-gray-100 p-10">
-    <div class="max-w-3xl mx-auto bg-white p-6 rounded-2xl shadow">
-        <h1 class="text-2xl font-bold mb-4 text-center">LinkedOut 🧠</h1>
+<body class="bg-slate-50 min-h-screen p-4 sm:p-8">
+    
+    <div class="max-w-3xl mx-auto">
+        
+        <header class="text-center mb-8">
+            <div class="flex items-center justify-center gap-3">
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-10 w-10 text-blue-600" viewBox="0 0 20 20" fill="currentColor">
+                  <path fill-rule="evenodd" d="M5 2a1 1 0 011 1v1h1a1 1 0 010 2H6v1a1 1 0 01-2 0V6H3a1 1 0 010-2h1V3a1 1 0 011-1zm0 10a1 1 0 011 1v1h1a1 1 0 110 2H6v1a1 1 0 11-2 0v-1H3a1 1 0 110-2h1v-1a1 1 0 011-1zM12 2a1 1 0 011 1v1h1a1 1 0 110 2h-1v1a1 1 0 11-2 0V6h-1a1 1 0 110-2h1V3a1 1 0 011-1zM11 13a1 1 0 011 1v1h1a1 1 0 110 2h-1v1a1 1 0 11-2 0v-1h-1a1 1 0 110-2h1v-1a1 1 0 011-1z" clip-rule="evenodd" />
+                </svg>
+                <h1 class="text-4xl font-bold text-slate-800">LinkedOut</h1>
+            </div>
+            <p class="text-lg text-slate-600 mt-2">Tired of long posts? Get the gist in seconds.</p>
+        </header>
 
-        <form id="summarizeForm" class="flex gap-2 mb-6">
-            {% csrf_token %}
-            <input id="urlInput" type="url" name="url" placeholder="Paste LinkedIn post URL" required
-                   class="flex-1 border border-gray-300 p-2 rounded">
-            <button type="submit" id="submitBtn" class="bg-blue-500 text-white px-4 py-2 rounded">
-                Summarize
-            </button>
-        </form>
+        <main class="bg-white p-6 sm:p-8 rounded-2xl shadow-xl transition-all">
+            
+            <form id="summarizeForm" class="mb-6">
+                {% csrf_token %}
+                <label for="urlInput" class="block text-sm font-medium text-gray-700 mb-1">LinkedIn Post URL</label>
+                <div class="flex flex-col sm:flex-row gap-2">
+                    <div class="relative flex-1">
+                        <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-gray-400" viewBox="0 0 20 20" fill="currentColor">
+                                <path fill-rule="evenodd" d="M12.586 4.586a2 2 0 112.828 2.828l-3 3a2 2 0 01-2.828 0l-1.5-1.5a.5.5 0 01.707-.707l1.5 1.5a1 1 0 001.414 0l3-3z" clip-rule="evenodd" />
+                                <path fill-rule="evenodd" d="M6.707 12.293a.5.5 0 010 .707l-1.5 1.5a1 1 0 000 1.414l3 3a1 1 0 001.414 0l1.5-1.5a.5.5 0 01.707.707l-1.5 1.5a2 2 0 01-2.828 0l-3-3a2 2 0 010-2.828l1.5-1.5a.5.5 0 01.707 0z" clip-rule="evenodd" />
+                            </svg>
+                        </div>
+                        <input id="urlInput" type="url" name="url" placeholder="https://www.linkedin.com/posts/..." required
+                               class="w-full border border-gray-300 p-3 pl-10 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent outline-none">
+                    </div>
+                    <button typed="submit" id="submitBtn" 
+                            class="flex justify-center items-center gap-2 bg-blue-600 text-white px-5 py-3 rounded-lg font-semibold hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 transition-colors">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="hi-icon" viewBox="0 0 20 20" fill="currentColor">
+                            <path fill-rule="evenodd" d="M5 2a1 1 0 011 1v1h1a1 1 0 010 2H6v1a1 1 0 01-2 0V6H3a1 1 0 010-2h1V3a1 1 0 011-1zm0 10a1 1 0 011 1v1h1a1 1 0 110 2H6v1a1 1 0 11-2 0v-1H3a1 1 0 110-2h1v-1a1 1 0 011-1zM12 2a1 1 0 011 1v1h1a1 1 0 110 2h-1v1a1 1 0 11-2 0V6h-1a1 1 0 110-2h1V3a1 1 0 011-1zM11 13a1 1 0 011 1v1h1a1 1 0 110 2h-1v1a1 1 0 11-2 0v-1h-1a1 1 0 110-2h1v-1a1 1 0 011-1z" clip-rule="evenodd" />
+                        </svg>
+                        <span>Generate Summary</span>
+                    </button>
+                </div>
+            </form>
 
-        <div id="loader" class="hidden text-center text-gray-500 mb-4">Summarizing...</div>
+            <div id="loader" class="hidden text-center text-gray-500 py-10">
+                <div class="flex flex-col items-center justify-center gap-3">
+                    <svg class="animate-spin h-8 w-8 text-blue-600" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                        <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+                        <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                    </svg>
+                    <span class="text-lg font-medium">Summarizing... this might take a moment.</span>
+                </div>
+            </div>
+            
+            <div id="result" class="hidden space-y-6 divide-y divide-gray-100">
 
-        <div id="result" class="hidden space-y-4">
-            <p><strong>Author:</strong> <span id="author"></span></p>
-            <p><strong>Summary:</strong></p>
-            <p id="summary" class="bg-blue-50 p-3 rounded"></p>
-            <p><strong>Post URL:</strong> <a id="post-url" class="text-blue-500">Click to view</a></p>
-            <p><strong>Original Text:</strong></p>
-            <p id="text" class="whitespace-pre-line bg-gray-50 p-3 rounded"></p>
-        </div>
+                <div id="authorSection" class="pt-4 flex items-center gap-3">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 text-gray-500" viewBox="0 0 20 20" fill="currentColor">
+                        <path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-6-3a2 2 0 11-4 0 2 2 0 014 0zM12 11H8a1 1 0 00-1 1v1a1 1 0 001 1h4a1 1 0 001-1v-1a1 1 0 00-1-1z" clip-rule="evenodd" />
+                    </svg>
+                    <span class="text-lg font-medium text-gray-800">Author:</span>
+                    <span id="authorName" class="text-lg text-gray-700"></span>
+                </div>
+
+                <div id="summarySection" class="pt-6">
+                    <h2 class="text-xl font-semibold text-gray-900 mb-3">AI Summary</h2>
+                    <blockquote class="border-l-4 border-blue-500 bg-blue-50 p-4 rounded-r-lg">
+                        <p id="summaryContent" class="text-base text-gray-800"></p>
+                    </blockquote>
+                </div>
+
+                <div id="originalTextSection" class="pt-6">
+                    <details class="group">
+                        <summary class="list-none flex items-center justify-between cursor-pointer">
+                            <span class="text-lg font-medium text-gray-800">View Original Post</span>
+                            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-gray-500 group-open:rotate-180 transition-transform" viewBox="0 0 20 20" fill="currentColor">
+                                <path fill-rule="evenodd" d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z" clip-rule="evenodd" />
+                            </svg>
+                        </summary>
+                        <div class="mt-4 bg-slate-50 p-4 rounded-lg">
+                            <p id="originalText" class="whitespace-pre-line text-gray-700"></p>
+                        </div>
+                    </details>
+                </div>
+                
+                <div id="linkSection" class="pt-6">
+                    <a id="postUrl" href="#" target="_blank" rel="noopener noreferrer"
+                       class="inline-flex items-center gap-2 bg-gray-800 text-white px-4 py-2 rounded-lg font-medium hover:bg-gray-900 focus:outline-none focus:ring-2 focus:ring-gray-800 focus:ring-offset-2 transition-colors">
+                        <span>View on LinkedIn</span>
+                    </a>
+                </div>
+
+            </div>
+        </main>
+
+        <footer class="text-center mt-8 text-slate-500">
+            <p>Python project by Anas, Sharvaj, Atharva and Prasad</p>
+        </footer>
     </div>
 
     <script>
         const form = document.getElementById("summarizeForm");
         const loader = document.getElementById("loader");
         const result = document.getElementById("result");
+        const submitBtn = document.getElementById("submitBtn");
 
         form.addEventListener("submit", async (e) => {
             e.preventDefault();
+            // Hide previous results and show loader
             result.classList.add("hidden");
             loader.classList.remove("hidden");
+            submitBtn.disabled = true; // Disable button during request
+            submitBtn.classList.add("opacity-50", "cursor-not-allowed");
 
             const url = document.getElementById("urlInput").value;
             const csrfToken = document.querySelector('[name=csrfmiddlewaretoken]').value;
 
-            const response = await fetch("/summarize/", {
-                method: "POST",
-                headers: {
-                    "X-CSRFToken": csrfToken,
-                    "Content-Type": "application/x-www-form-urlencoded"
-                },
-                body: new URLSearchParams({ url })
-            });
+            try {
+                const response = await fetch("/summarize/", {
+                    method: "POST",
+                    headers: {
+                        "X-CSRFToken": csrfToken,
+                        "Content-Type": "application/x-www-form-urlencoded"
+                    },
+                    body: new URLSearchParams({ url })
+                });
 
-            loader.classList.add("hidden");
-
-            if (response.ok) {
-                const data = await response.json();
-                document.getElementById("author").textContent = data.author || "Unknown";
-                document.getElementById("text").textContent = data.text || "No text found.";
-                document.getElementById("summary").textContent = data.summary || "No summary generated.";
-                document.getElementById("post-url").href = url || "N/A";
-                result.classList.remove("hidden");
-            } else {
-                alert("Error summarizing post. Try again.");
+                if (response.ok) {
+                    const data = await response.json();
+                    
+                    // Populate the new result fields
+                    document.getElementById("authorName").textContent = data.author || "Author not found";
+                    document.getElementById("originalText").textContent = data.text || "No original text found.";
+                    document.getElementById("summaryContent").textContent = data.summary || "Could not generate summary.";
+                    document.getElementById("postUrl").href = url || "#";
+                    
+                    // Show the results
+                    result.classList.remove("hidden");
+                } else {
+                    // Handle server errors
+                    alert("Error summarizing post. The server responded with an error.");
+                    document.getElementById("summaryContent").textContent = "Error: Could not fetch or summarize the post.";
+                    result.classList.remove("hidden");
+                }
+            } catch (error) {
+                // Handle network errors
+                console.error("Fetch error:", error);
+                alert("A network error occurred. Please check your connection.");
+            } finally {
+                // Always re-enable the button and hide the loader
+                loader.classList.add("hidden");
+                submitBtn.disabled = false;
+                submitBtn.classList.remove("opacity-50", "cursor-not-allowed");
             }
         });
     </script>
