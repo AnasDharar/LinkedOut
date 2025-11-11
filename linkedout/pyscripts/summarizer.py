@@ -7,6 +7,7 @@ import os
 env = Env()
 BASE_DIR = Path(__file__).resolve().parent.parent.parent
 env.read_env(os.path.join(BASE_DIR, '.env'))
+
 client = genai.Client(api_key=env("SALAAR_SENPAI"))
 
 def summarize_text(text):
